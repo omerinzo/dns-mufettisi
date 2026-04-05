@@ -1,0 +1,99 @@
+# DNS Müfettişi
+
+DNS Müfettişi, yerel ağdan gelen DNS sorgularını yakalayan, hangi domain'lere gidilmeye çalışıldığını dashboard üzerinde gösteren ve sorguları **DNS-over-HTTPS (DoH)** ile upstream sağlayıcıya ileten küçük bir örnek projedir.
+
+Bu proje, İstinye Üniversitesi'ndeki “DNS Müfettişi” görevine uygun olacak şekilde **GitHub'a koymalık**, sade ama öğretici bir örnek olması için hazırlandı.
+
+## Özellikler
+
+- UDP DNS sorgularını dinler
+- Sorgudaki domain adlarını ve kayıt tiplerini loglar
+- Sorguyu DoH sağlayıcısına güvenli biçimde iletir
+- Cevabı istemciye geri döner
+- Basit bir web dashboard ile canlı olayları gösterir
+- `hickory-proto` kullanarak DNS paketini parse eder
+
+## Mimari
+
+```text
+Client -> UDP DNS Listener -> Domain Parse/Log -> DoH Upstream -> Response Back to Client
+                              \
+                               -> Web Dashboard (/api/events)
+```
+
+## Kullanılan Teknolojiler
+
+- Rust
+- Tokio
+- Axum
+- Hickory DNS (`hickory-proto`)
+- Reqwest + Rustls
+
+## Kurulum
+
+> Not: Varsayılan olarak port `5353` kullanılır. Çünkü `53` portu çoğu sistemde root/administrator ister.
+
+### 1) Projeyi çalıştır
+
+```bash
+cargo run
+```
+
+### 2) Dashboard'ı aç
+
+```text
+http://127.0.0.1:8080
+```
+
+### 3) Test et
+
+Linux/macOS:
+
+```bash
+dig @127.0.0.1 -p 5353 openai.com
+```
+
+Windows (PowerShell, `nslookup`):
+
+```powershell
+nslookup openai.com 127.0.0.1
+```
+
+> `nslookup` bazı sistemlerde özel port seçimini desteklemez. Gerekirse `dig` veya başka DNS test aracı kullan.
+
+## Özel Ayarlar
+
+Başlatırken argüman verebilirsin:
+
+```bash
+cargo run -- --listen 127.0.0.1:5353 --dashboard 127.0.0.1:8080 --doh https://cloudflare-dns.com/dns-query
+```
+
+### Parametreler
+
+- `--listen`: UDP DNS dinleme adresi
+- `--dashboard`: Dashboard HTTP adresi
+- `--doh`: Upstream DoH sağlayıcısı
+- `--max-logs`: Bellekte tutulacak maksimum olay sayısı
+
+## Güvenlik Notları
+
+Bu proje öğretim amaçlıdır. Gerçek üretim ortamında aşağıdakiler de eklenmelidir:
+
+- Erişim kontrolü / dashboard auth
+- Kalıcı loglama
+- DNS cache
+- Rate limit
+- Blocklist / allowlist
+- Dockerfile ve container hardening
+- TLS certificate pinning / upstream kontrolü
+
+## GitHub İçin Önerilen Repo Adı
+
+- `dns-mufettisi`
+- `dns-inspector-doh`
+- `rust-dns-mufettisi`
+
+## Lisans
+
+MIT

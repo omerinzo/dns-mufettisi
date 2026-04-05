@@ -1,0 +1,21 @@
+[package]
+name = "dns-mufettisi"
+version = "0.1.0"
+edition = "2021"
+description = "A small DNS inspector and DoH forwarder built with hickory-dns"
+license = "MIT"
+
+[dependencies]
+anyhow = "1"
+axum = { version = "0.7", features = ["http1", "tokio"] }
+base64 = "0.22"
+bytes = "1"
+chrono = { version = "0.4", features = ["clock"] }
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+hickory-proto = { version = "0.24", default-features = false, features = ["tokio-runtime"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "http2"] }
